@@ -1,0 +1,13 @@
+import React from "react";
+import Carousel from '../Components/Carousel';
+export default function Home() {
+  return (
+  <div>
+    <div>
+      <h1>Top News:</h1>
+      <Carousel/>
+    </div>
+    
+  </div>
+  );
+}
