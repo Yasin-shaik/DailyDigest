@@ -5,8 +5,13 @@ import Home from './Pages/Home';
 import Navbar from './Components/Navbar';
 import About from './Pages/About';
 import News from './Pages/News';
+import Admin from './Pages/Admin';
+import AdminNewsPage from './Pages/AdminNewsPage';
+import NewsPage from './Pages/NewsPage';
 function App() {
-  const[category,setCategory]=useState('ALL');
+  const[category,setCategory]=useState('');
+  const[adminNews,setAdminNews]=useState([]);
+  const[current,setCurrent]=useState();
   return (
     <>
       <BrowserRouter>
@@ -14,10 +19,10 @@ function App() {
         <Routes>
           <Route exact path='/' element={<Home/>}></Route>
           <Route exact path='/about' element={<About/>}></Route>
-          <Route exact path='/news' element={<News category={category}/>}></Route>
-          <Route exact path='/politics' element={<News category={category}/>}></Route>
-          <Route exact path='/cinema' element={<News category={category}/>}></Route>
-          <Route exact path='/education' element={<News category={category}/>}></Route>
+          <Route exact path='/news' element={<News setCurrent={setCurrent} category={category}/>}></Route>
+          <Route exact path='/newsPage' element={<NewsPage article={current}/>}></Route>
+          <Route exact path='/admin' element={<Admin setAdminNews={setAdminNews}/>}></Route>
+          <Route exact path='/admin/newsPage' element={<AdminNewsPage news={adminNews}/>}></Route>
         </Routes>
       </BrowserRouter>
     </>

@@ -1,17 +1,18 @@
-import React from 'react'
-import flower from '../assets/Images/flower.jpg'
-import { Link } from 'react-router-dom'
-export default function NewsContainer() {
+import React from "react";
+import { Link } from "react-router-dom";
+export default function NewsContainer(props) {
+  const article=props.article;
   return (
     <div>
-        <div className="card" style={{width: '18rem'}}>
-            <img src={flower} className="card-img-top" alt="..."/>
-            <div className="card-body">
-                <h5 className="card-title">Card title</h5>
-                <p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <Link to="/" className="btn btn-primary">Go somewhere</Link>
-            </div>
+      <div className="card mb-3" style={{ width: "18rem" }}>
+        <img src={article.urlToImage} className="card-img-top" alt="..." />
+        <div className="card-body">
+          <h5 className="card-title">{article.title}</h5>
+          <Link to='/newsPage' className="btn btn-primary">
+            <button onClick={()=>{props.setCurrent(article)}}>Read more</button>
+          </Link>
         </div>
+      </div>
     </div>
-  )
+  );
 }
