@@ -1,37 +1,39 @@
-import CallToAction from '../components/CallToAction';
+import CallToAction from "../components/CallToAction";
 
 export default function About() {
   return (
-    <div className='min-h-screen flex items-center justify-center'>
-      <div className='max-w-2xl mx-auto p-3 text-center'>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="max-w-2xl mx-auto p-3 text-center">
         <div>
-          <h1 className='text-3xl font font-semibold text-center my-7'>
-            About Sahand's Blog
+          <h1 className="text-3xl font font-semibold text-center my-7">
+            About DailyDigest
           </h1>
-          <div className='text-md text-gray-500 flex flex-col gap-6'>
+          <div className="text-md text-gray-500 flex flex-col gap-6">
             <p>
-              Welcome to Sahand's Blog! This blog was created by Sahand Ghavidel
-              as a personal project to share his thoughts and ideas with the
-              world. Sahand is a passionate developer who loves to write about
-              technology, coding, and everything in between.
+              Welcome to DailyDigest! This platform was built as a passion
+              project to help readers stay informed with the latest news and
+              trends — all in one place. Whether you're a tech enthusiast, a
+              curious learner, or just someone looking to stay updated,
+              DailyDigest has something for you.
             </p>
 
             <p>
-              On this blog, you'll find weekly articles and tutorials on topics
-              such as web development, software engineering, and programming
-              languages. Sahand is always learning and exploring new
-              technologies, so be sure to check back often for new content!
+              Here, you’ll find daily updates on current affairs, AI-powered
+              summaries of important articles, and sentiment analysis to help
+              you quickly understand the tone of the news. Our goal is to make
+              news consumption faster, smarter, and more interactive for
+              everyone.
             </p>
 
             <p>
-              We encourage you to leave comments on our posts and engage with
-              other readers. You can like other people's comments and reply to
-              them as well. We believe that a community of learners can help
-              each other grow and improve.
+              DailyDigest also encourages community interaction. Feel free to
+              comment on articles, share your thoughts, and join the discussion
+              with other readers. We believe that informed conversations help
+              build a better world.
             </p>
           </div>
         </div>
-        <div className='mt-10'>
+        <div className="mt-10">
           <CallToAction />
         </div>
       </div>
