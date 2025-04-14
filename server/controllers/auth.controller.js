@@ -58,6 +58,7 @@ export const Login = async (req, res, next) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
         avatar: user.avatar,
       },
       process.env.JWT_SECRET
@@ -66,7 +67,7 @@ export const Login = async (req, res, next) => {
     res.cookie("access_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "Lax" : "strict",
       path: "/",
     });
 
