@@ -1,49 +1,53 @@
 import express from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
-import userRoutes from "./routes/user.route.js";
-import authRoutes from "./routes/auth.route.js";
-import postRoutes from "./routes/post.route.js";
-import commentRoutes from "./routes/comment.route.js";
 import cookieParser from "cookie-parser";
-import path from "path";
+import cors from "cors";
+import mongoose from "mongoose";
+import AuthRoute from "./routes/Auth.route.js";
+import UserRoute from "./routes/User.route.js";
+import CategoryRoute from "./routes/Category.route.js";
+import BlogRoute from "./routes/Blog.route.js";
+import CommentRouote from "./routes/Comment.route.js";
+import BlogLikeRoute from "./routes/Bloglike.route.js";
 
 dotenv.config();
 
-mongoose
-  .connect(process.env.MONGO)
-  .then(() => {
-    console.log("MongoDb is connected");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
-const __dirname = path.resolve();
-
+const PORT = process.env.PORT;
 const app = express();
 
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000!");
+// route setup
+
+app.use("/api/auth", AuthRoute);
+app.use("/api/user", UserRoute);
+app.use("/api/category", CategoryRoute);
+app.use("/api/blog", BlogRoute);
+app.use("/api/comment", CommentRouote);
+app.use("/api/blog-like", BlogLikeRoute);
+app.get("/", (req, res) => {
+  res.send("Welcome to the MERN Stack!");
 });
 
-app.use("/api/user", userRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/post", postRoutes);
-app.use("/api/comment", commentRoutes);
+mongoose
+  .connect(process.env.MONGODB_CONN, { dbName: "DailyDigest" })
+  .then(() => console.log("Database connected."))
+  .catch((err) => console.log("Database connection failed.", err));
 
-app.use(express.static(path.join(__dirname, "/client/dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+app.listen(PORT, () => {
+  console.log("Server running on port:", PORT);
 });
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
+  const message = err.message || "Internal server error.";
   res.status(statusCode).json({
     success: false,
     statusCode,

@@ -1,21 +1,16 @@
-import express from 'express';
-import {
-  deleteUser,
-  getUser,
-  getUsers,
-  signout,
-  test,
-  updateUser,
-} from '../controllers/user.controller.js';
-import { verifyToken } from '../utils/verifyUser.js';
+import express from 'express'
+import { deleteUser, getAllUser, getUser, updateUser } from '../controllers/User.controller.js'
+import upload from '../config/multer.js'
+import { authenticate } from '../middleware/authenticate.js'
 
-const router = express.Router();
+const UserRoute = express.Router()
 
-router.get('/test', test);
-router.put('/update/:userId', verifyToken, updateUser);
-router.delete('/delete/:userId', verifyToken, deleteUser);
-router.post('/signout', signout);
-router.get('/getusers', verifyToken, getUsers);
-router.get('/:userId', getUser);
+UserRoute.use(authenticate)
 
-export default router;
+UserRoute.get('/get-user/:userid', getUser)
+UserRoute.put('/update-user/:userid', upload.single('file'), updateUser)
+UserRoute.get('/get-all-user', getAllUser)
+UserRoute.delete('/delete/:id', deleteUser)
+
+
+export default UserRoute

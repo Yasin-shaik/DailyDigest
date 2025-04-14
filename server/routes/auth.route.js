@@ -1,11 +1,12 @@
-import express from 'express';
-import { google, signin, signup } from '../controllers/auth.controller.js';
+import express from 'express'
+import { GoogleLogin, Login, Logout, Register } from '../controllers/Auth.controller.js'
+import { authenticate } from '../middleware/authenticate.js'
 
-const router = express.Router();
+const AuthRoute = express.Router()
 
+AuthRoute.post('/register', Register)
+AuthRoute.post('/login', Login)
+AuthRoute.post('/google-login', GoogleLogin)
+AuthRoute.get('/logout', authenticate, Logout)
 
-router.post('/signup', signup);
-router.post('/signin', signin);
-router.post('/google', google)
-
-export default router;
+export default AuthRoute

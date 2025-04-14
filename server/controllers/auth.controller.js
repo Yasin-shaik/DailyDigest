@@ -1,115 +1,149 @@
+import { handleError } from "../helpers/handleError.js";
 import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
-import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
-
-export const signup = async (req, res, next) => {
-  const { username, email, password } = req.body;
-
-  if (
-    !username ||
-    !email ||
-    !password ||
-    username === "" ||
-    email === "" ||
-    password === ""
-  ) {
-    next(errorHandler(400, "All fields are required"));
-  }
-
-  const hashedPassword = bcryptjs.hashSync(password, 10);
-
-  const newUser = new User({
-    username,
-    email,
-    password: hashedPassword,
-  });
-
+export const Register = async (req, res, next) => {
   try {
-    await newUser.save();
-    res.json("Signup successful");
+    const { name, email, password } = req.body;
+
+    // Check if the user already exists
+    const checkuser = await User.findOne({ email });
+    if (checkuser) {
+      return next(handleError(409, "User already registered."));
+    }
+
+    // Count number of users in the database
+    const userCount = await User.countDocuments();
+
+    // Determine role based on whether this is the first user
+    const role = userCount === 0 ? "admin" : "user";
+
+    const hashedPassword = bcryptjs.hashSync(password);
+
+    // Register the new user with assigned role
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role, // new role field
+    });
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Registration successful.",
+    });
   } catch (error) {
-    next(error);
+    next(handleError(500, error.message));
   }
 };
 
-export const signin = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (!email || !password || email === "" || password === "") {
-    next(errorHandler(400, "All fields are required"));
-  }
-
+export const Login = async (req, res, next) => {
   try {
-    const validUser = await User.findOne({ email });
-    if (!validUser) {
-      return next(errorHandler(404, "User not found"));
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      next(handleError(404, "Invalid login credentials."));
     }
-    const validPassword = bcryptjs.compareSync(password, validUser.password);
-    if (!validPassword) {
-      return next(errorHandler(400, "Invalid password"));
+    const hashedPassword = user.password;
+
+    const comparePassword = bcryptjs.compare(password, hashedPassword);
+    if (!comparePassword) {
+      next(handleError(404, "Invalid login credentials."));
     }
+
     const token = jwt.sign(
-      { id: validUser._id, isAdmin: validUser.isAdmin },
+      {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
       process.env.JWT_SECRET
     );
 
-    const { password: pass, ...rest } = validUser._doc;
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      path: "/",
+    });
 
-    res
-      .status(200)
-      .cookie("access_token", token, {
-        httpOnly: true,
-      })
-      .json(rest);
+    const newUser = user.toObject({ getters: true });
+    delete newUser.password;
+    res.status(200).json({
+      success: true,
+      user: newUser,
+      message: "Login successful.",
+    });
   } catch (error) {
-    next(error);
+    next(handleError(500, error.message));
   }
 };
 
-export const google = async (req, res, next) => {
-  const { email, name, googlePhotoUrl } = req.body;
+export const GoogleLogin = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email });
-    if (user) {
-      const token = jwt.sign(
-        { id: user._id, isAdmin: user.isAdmin },
-        process.env.JWT_SECRET
-      );
-      const { password, ...rest } = user._doc;
-      res
-        .status(200)
-        .cookie("access_token", token, {
-          httpOnly: true,
-        })
-        .json(rest);
-    } else {
-      const generatedPassword =
-        Math.random().toString(36).slice(-8) +
-        Math.random().toString(36).slice(-8);
-      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+    const { name, email, avatar } = req.body;
+    let user;
+    user = await User.findOne({ email });
+    if (!user) {
+      //  create new user
+      const password = Math.random().toString();
+      const hashedPassword = bcryptjs.hashSync(password);
       const newUser = new User({
-        username:
-          name.toLowerCase().split(" ").join("") +
-          Math.random().toString(9).slice(-4),
+        name,
         email,
         password: hashedPassword,
-        profilePicture: googlePhotoUrl,
+        avatar,
       });
-      await newUser.save();
-      const token = jwt.sign(
-        { id: newUser._id, isAdmin: newUser.isAdmin },
-        process.env.JWT_SECRET
-      );
-      const { password, ...rest } = newUser._doc;
-      res
-        .status(200)
-        .cookie("access_token", token, {
-          httpOnly: true,
-        })
-        .json(rest);
+
+      user = await newUser.save();
     }
+
+    const token = jwt.sign(
+      {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
+      process.env.JWT_SECRET
+    );
+
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      path: "/",
+    });
+
+    const newUser = user.toObject({ getters: true });
+    delete newUser.password;
+    res.status(200).json({
+      success: true,
+      user: newUser,
+      message: "Login successful.",
+    });
   } catch (error) {
-    next(error);
+    next(handleError(500, error.message));
+  }
+};
+
+export const Logout = async (req, res, next) => {
+  try {
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      path: "/",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Logout successful.",
+    });
+  } catch (error) {
+    next(handleError(500, error.message));
   }
 };

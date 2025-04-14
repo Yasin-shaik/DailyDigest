@@ -1,21 +1,14 @@
-import express from 'express';
-import { verifyToken } from '../utils/verifyUser.js';
-import {
-  createComment,
-  deleteComment,
-  editComment,
-  getPostComments,
-  getcomments,
-  likeComment,
-} from '../controllers/comment.controller.js';
+import express from 'express'
+import { addcomment, commentCount, deleteComment, getAllComments, getComments } from '../controllers/Comment.controller.js'
+import { authenticate } from '../middleware/authenticate.js'
 
-const router = express.Router();
+const CommentRouote = express.Router()
 
-router.post('/create', verifyToken, createComment);
-router.get('/getPostComments/:postId', getPostComments);
-router.put('/likeComment/:commentId', verifyToken, likeComment);
-router.put('/editComment/:commentId', verifyToken, editComment);
-router.delete('/deleteComment/:commentId', verifyToken, deleteComment);
-router.get('/getcomments', verifyToken, getcomments);
+CommentRouote.post('/add', authenticate, addcomment)
+CommentRouote.get('/get/:blogid', getComments)
+CommentRouote.get('/get-count/:blogid', commentCount)
+CommentRouote.get('/get-all-comment', authenticate, getAllComments)
+CommentRouote.delete('/delete/:commentid', authenticate, deleteComment)
 
-export default router;
+
+export default CommentRouote

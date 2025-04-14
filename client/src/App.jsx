@@ -1,43 +1,62 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import About from './pages/About';
-import SignIn from './pages/SignIn';
-import Dashboard from './pages/Dashboard';
-import Projects from './pages/Projects';
-import SignUp from './pages/SignUp';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import PrivateRoute from './components/PrivateRoute';
-import OnlyAdminPrivateRoute from './components/OnlyAdminPrivateRoute';
-import CreatePost from './pages/CreatePost';
-import UpdatePost from './pages/UpdatePost';
-import PostPage from './pages/PostPage';
-import ScrollToTop from './components/ScrollToTop';
-import Search from './pages/Search';
+import React from 'react'
+import { Button } from './components/ui/button'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Layout from './Layout/Layout'
+import { RouteAddCategory, RouteBlog, RouteBlogAdd, RouteBlogByCategory, RouteBlogDetails, RouteBlogEdit, RouteCategoryDetails, RouteCommentDetails, RouteEditCategory, RouteIndex, RouteProfile, RouteSearch, RouteSignIn, RouteSignUp, RouteUser } from './helpers/RouteName'
+import Index from './pages/Index'
+import SignUp from './pages/SignUp'
+import SignIn from './pages/SignIn'
+import Profile from './pages/Profile'
+import AddCategory from './pages/Category/AddCategory'
+import CategoryDetails from './pages/Category/CategoryDetails'
+import EditCategory from './pages/Category/EditCategory'
+import AddBlog from './pages/Blog/AddBlog'
+import BlogDetails from './pages/Blog/BlogDetails'
+import EditBlog from './pages/Blog/EditBlog'
+import SingleBlogDetails from './pages/SingleBlogDetails'
+import BlogByCategory from './pages/Blog/BlogByCategory'
+import SearchResult from './pages/SearchResult'
+import Comments from './pages/Comments'
+import User from './pages/User'
+import AuthRouteProtechtion from './components/AuthRouteProtechtion'
+import OnlyAdminAllowed from './components/OnlyAdminAllowed'
 
-export default function App() {
+const App = () => {
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <Header />
       <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/sign-in' element={<SignIn />} />
-        <Route path='/sign-up' element={<SignUp />} />
-        <Route path='/search' element={<Search />} />
-        <Route element={<PrivateRoute />}>
-          <Route path='/dashboard' element={<Dashboard />} />
-        </Route>
-        <Route element={<OnlyAdminPrivateRoute />}>
-          <Route path='/create-post' element={<CreatePost />} />
-          <Route path='/update-post/:postId' element={<UpdatePost />} />
+        <Route path={RouteIndex} element={<Layout />} >
+          <Route index element={<Index />} />
+
+
+          <Route path={RouteBlogDetails()} element={<SingleBlogDetails />} />
+          <Route path={RouteBlogByCategory()} element={<BlogByCategory />} />
+          <Route path={RouteSearch()} element={<SearchResult />} />
+
+
+          <Route element={<AuthRouteProtechtion />}>
+            <Route path={RouteProfile} element={<Profile />} />
+            <Route path={RouteBlogAdd} element={<AddBlog />} />
+            <Route path={RouteBlog} element={<BlogDetails />} />
+            <Route path={RouteBlogEdit()} element={<EditBlog />} />
+            <Route path={RouteCommentDetails} element={<Comments />} />
+          </Route>
+
+
+          <Route element={<OnlyAdminAllowed />}>
+            <Route path={RouteAddCategory} element={<AddCategory />} />
+            <Route path={RouteCategoryDetails} element={<CategoryDetails />} />
+            <Route path={RouteEditCategory()} element={<EditCategory />} />
+            <Route path={RouteUser} element={<User />} />
+          </Route>
+
         </Route>
 
-        <Route path='/news' element={<Projects />} />
-        <Route path='/post/:postSlug' element={<PostPage />} />
+        <Route path={RouteSignIn} element={<SignIn />} />
+        <Route path={RouteSignUp} element={<SignUp />} />
       </Routes>
-      <Footer />
     </BrowserRouter>
-  );
+  )
 }
+
+export default App 
