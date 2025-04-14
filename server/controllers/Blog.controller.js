@@ -11,7 +11,7 @@ export const addBlog = async (req, res, next) => {
     if (req.file) {
       try {
         const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-          folder: "yt-mern-blog",
+          folder: "DailyDigest",
           resource_type: "auto",
         });
         featuredImage = uploadResult.secure_url;
