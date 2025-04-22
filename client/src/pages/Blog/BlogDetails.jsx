@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -59,7 +58,6 @@ const BlogDetails = () => {
                                 <TableHead>Author </TableHead>
                                 <TableHead>Category </TableHead>
                                 <TableHead>Title</TableHead>
-                                <TableHead>Slug</TableHead>
                                 <TableHead>Dated</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
@@ -72,7 +70,6 @@ const BlogDetails = () => {
                                         <TableCell>{blog?.author?.name}</TableCell>
                                         <TableCell>{blog?.category?.name}</TableCell>
                                         <TableCell>{blog?.title}</TableCell>
-                                        <TableCell>{blog?.slug}</TableCell>
                                         <TableCell>{moment(blog?.createdAt).format('DD-MM-YYYY')}</TableCell>
                                      
                                         <TableCell className="flex gap-3">
